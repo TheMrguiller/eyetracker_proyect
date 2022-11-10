@@ -36,3 +36,6 @@ while(True):
         break;
 vid.release()# Soltamos el objeto captura
 cv2.destroyAllWindows() # Destruimos todas las ventanas generadas
+
+
+##3pruebita jeje
