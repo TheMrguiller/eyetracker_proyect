@@ -3,6 +3,8 @@ import dlib
 import cv2
 import numpy as np
 from helpers import *
+import time
+
 ############################### THINHS TO DO ################
 # 1 -Capture face
 # 2- Capture landmasks
@@ -41,7 +43,11 @@ while True:
         rect=get_frontal_face(rects)
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
+        #start_time_ns = time.process_time_ns()
         cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l=eye_detector.get_eyes_position(image=image,shape=shape)
+        #end_time_ns = time.process_time_ns()
+        #timer_ns = end_time_ns - start_time_ns
+        #print(timer_ns)
         cv2.circle(crop_img_r, (cX_r, cY_r), 1, (255, 255, 255), -1)  
         cv2.circle(crop_img_l, (cX_l, cY_l), 1, (255, 255, 255), -1)
         cv2.imshow("ojo_derecho",crop_img_r)
