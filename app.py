@@ -1,0 +1,1 @@
+#https://pythonpyqt.com/pyqt-window/

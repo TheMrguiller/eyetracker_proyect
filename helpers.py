@@ -92,6 +92,7 @@ class SegmentPinter:
         self.heightInterval = self.height//self.N
         self.withInterval = self.width//self.N
         self.listaCuadrants = []
+    #Reiniciamos nuestra matriz de puntos
     def refresh_list(self):
         self.listaCuadrants.clear()
         for i in range(int(self.N)):
@@ -105,14 +106,22 @@ class SegmentPinter:
                 listaPuntos.append(punto1)
                 listaPuntos.append(punto2)
                 self.listaCuadrants.append(listaPuntos) 
+    #Pintamos la matriz de cuadrantes en la imagen
     def paint_cuadrants(self):
-        image= self.image
+        image= self.image.copy()
         for i in range(int(self.N) - 1):
             i += 1 ##Ya corregire esto luego es para ir haciendo pruebas (y, x)
             image = cv2.line(image, (0, int(self.heightInterval * i)), (self.width, int(self.heightInterval * i)), (0,0,0), 5)
             image = cv2.line(image, (int(self.withInterval * i), 0 ), (int(self.withInterval*i), self.height), (0,0,0), 5)
         return image
+    #Pintamos el objtivo
     def paint_objective(self,image,objetiveCuadrant):
-        image = cv2.line(image, self.listaCuadrants[objetiveCuadrant][0], self.listaCuadrants[objetiveCuadrant][1], (0,0,0), 5)
+        image=self.tranparetColor(self.listaCuadrants[objetiveCuadrant][0],self.listaCuadrants[objetiveCuadrant][1],image)
+        #image = cv2.line(image, self.listaCuadrants[objetiveCuadrant][0], self.listaCuadrants[objetiveCuadrant][1], (0,0,0), 5)
         return image
-
+    def tranparetColor(self,x_point,x1_point,image):
+        mask = np.zeros(image.shape[:2], dtype="uint8")
+        cv2.rectangle(mask, x_point, x1_point, 255, -1)
+        trans_image = np.copy(image)
+        trans_image[(mask==255)] = [0,255,0]
+        return cv2.addWeighted(trans_image, 0.3, image, 0.7, 0, trans_image)
