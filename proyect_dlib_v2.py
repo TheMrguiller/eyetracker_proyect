@@ -24,12 +24,9 @@ p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(p)
 
-right = [36, 37, 38, 39, 40, 41] # keypoint indices for left eye
-left = [42, 43, 44, 45, 46, 47] # keypoint indices for right eye
-
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FPS, 60)
-cv2.namedWindow('image')
+eye_detector=eyeDetector()
 while True:
     # load the input image and convert it to grayscale
     _, image = cap.read()
@@ -44,33 +41,11 @@ while True:
         rect=get_frontal_face(rects)
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
-
-        mask_right = np.zeros(image.shape[:2], dtype=np.uint8)
-        mask_right = eye_on_mask(mask_right, right,shape=shape)
-        kernel = np.ones((9, 9), np.uint8)
-        mask_right = cv2.dilate(mask_right, kernel, 5)
-        x,y,w,h = cv2.boundingRect(mask_right)
-        crop_img = image[y:y+h, x:x+w]
-        crop_img= brightness(crop_img,0.4)
-        crop_img_gray = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
-        image_enhanced = cv2.equalizeHist(crop_img_gray)
-        image_enhanced=cv2.GaussianBlur(image_enhanced,(3,3),0)
-        se=cv2.getStructuringElement(cv2.MORPH_ELLIPSE , (7,7))
-        bg=cv2.morphologyEx(image_enhanced, cv2.MORPH_DILATE, se)
-        out_gray=cv2.divide(image_enhanced, bg, scale=255)
-        out_binary=cv2.threshold(out_gray, 70, 255, cv2.THRESH_BINARY_INV )[1]
-        contours1, hierarchy = cv2.findContours(out_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        c = max(contours1, key = cv2.contourArea)
-        M = cv2.moments(c)
-        cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])
-        cv2.circle(crop_img, (cX, cY), 1, (255, 255, 255), -1)        
-        cv2.imshow("image", out_gray)
-        cv2.imshow("sdsa", out_binary)
-        
-        cv2.imshow("ee", crop_img)
-        cv2.imshow("asda", image)
-            
+        cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l=eye_detector.get_eyes_position(image=image,shape=shape)
+        cv2.circle(crop_img_r, (cX_r, cY_r), 1, (255, 255, 255), -1)  
+        cv2.circle(crop_img_l, (cX_l, cY_l), 1, (255, 255, 255), -1)
+        cv2.imshow("ojo_derecho",crop_img_r)
+        cv2.imshow("ojo_izquierdo",crop_img_l)
     if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
         break
 
