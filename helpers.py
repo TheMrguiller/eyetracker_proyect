@@ -1,5 +1,4 @@
 from imutils import face_utils
-import dlib
 import cv2
 import numpy as np
 
@@ -83,3 +82,37 @@ class eyeDetector:
         for i in range(256):
             lookUpTable[0,i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
         return cv2.LUT(image, lookUpTable)
+class SegmentPinter:
+    def __init__(self,image,numberCuadrants=9):
+        self.numberCuadrants = numberCuadrants
+        self.N = np.sqrt(self.numberCuadrants)
+        self.image=image
+        self.width = self.image.shape[1]  ##solo cogemos el height y la width
+        self.height = self.image.shape[0]
+        self.heightInterval = self.height//self.N
+        self.withInterval = self.width//self.N
+        self.listaCuadrants = []
+    def refresh_list(self):
+        self.listaCuadrants.clear()
+        for i in range(int(self.N)):
+            #iwi = i*self.withInterval
+            #ihe = i*self.heightInterval
+            for j in range(int(self.N)):
+                punto1 = (int((self.withInterval*j)), int((self.heightInterval*i)))
+                #punto2 = (int((withInterval*(j+1)) + iwi), int((heightInterval*(i+1)) + ihe))
+                punto2 = (int(punto1[0] + self.withInterval), int(punto1[1] + self.heightInterval))
+                listaPuntos = []
+                listaPuntos.append(punto1)
+                listaPuntos.append(punto2)
+                self.listaCuadrants.append(listaPuntos) 
+    def paint_cuadrants(self):
+        image= self.image
+        for i in range(int(self.N) - 1):
+            i += 1 ##Ya corregire esto luego es para ir haciendo pruebas (y, x)
+            image = cv2.line(image, (0, int(self.heightInterval * i)), (self.width, int(self.heightInterval * i)), (0,0,0), 5)
+            image = cv2.line(image, (int(self.withInterval * i), 0 ), (int(self.withInterval*i), self.height), (0,0,0), 5)
+        return image
+    def paint_objective(self,image,objetiveCuadrant):
+        image = cv2.line(image, self.listaCuadrants[objetiveCuadrant][0], self.listaCuadrants[objetiveCuadrant][1], (0,0,0), 5)
+        return image
+
