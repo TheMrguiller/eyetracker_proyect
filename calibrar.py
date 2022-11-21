@@ -6,6 +6,8 @@ import numpy as np
 from helpers import *
 import json
 import os
+
+
 def onMouse(event, x, y, flags, param):
     global indice
     global copia
@@ -48,34 +50,28 @@ def get_positions(image,indice):
 
 def check_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l):
     isFile = os.path.isfile("config.json")
+
     if isFile == True:
         write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="r+")
     else:
         write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="w")
 
-def write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type):       
+def write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type): 
+    print(str(cX_r))    
+    print(str(cY_r))    
+    print(str(cX_l))    
+    print(str(cY_l))    
+    print(str(crop_img_r.shape[0]))   
+    print(str(crop_img_r.shape[1]))   
+    print(str(crop_img_r.shape[0]))    
+    print(str(crop_img_l.shape[1]))   
+
+    cadenaCompleta = "cX_r:" + str(cX_r) + ',' + "cY_r:" + str(cY_r) + ',' + "w_r:" + str(crop_img_r.shape[1]) + ',' + "h_r:" + str(crop_img_r.shape[0]) + ',' + "cX_l:" + str(cX_l) + ',' + "w_l:" + str(crop_img_l.shape[1]) + ',' +  "h_l:" + str(crop_img_l.shape[0])
+
+    print(cadenaCompleta)    
     with open("config.json",write_type) as file:
-        # First we load existing data into a dict.
-        if write_type == "r+":
-            file_data = json.load(file)
-        name= "secccion_"+str(indice)
-    
-        # Join new_data with file_data inside emp_details
-        file_data[name]={
-            "cX_r": cX_r,
-            "cY_r": cY_r,
-            "w_r": crop_img_r.shape[1],
-            "h_r": crop_img_r.shape[0],
-            "cX_l": cX_l,
-            "cY_l": cY_l,
-            "w_l": crop_img_l.shape[1],
-            "h_l": crop_img_l.shape[0]
-        }
-        file.seek(0)
-        # convert back to json.
-        json.dump(file_data, file, indent = 4)
-        # convert back to json.
-        file.close()
+        file.write(cadenaCompleta)
+    file.close()
 
 indice=0
 blank_image = np.zeros((500,1000,3), np.uint8)
