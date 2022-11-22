@@ -28,7 +28,7 @@ right = [36, 37, 38, 39, 40, 41] # keypoint indices for left eye
 left = [42, 43, 44, 45, 46, 47] # keypoint indices for right eye
 
 cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FPS, 60)
+cap.set(cv2.CAP_PROP_FPS, 120)
 cv2.namedWindow('image')
 while True:
     # load the input image and convert it to grayscale
@@ -68,9 +68,20 @@ while True:
         cv2.imshow("image", out_gray)
         cv2.imshow("sdsa", out_binary)
         
+<<<<<<< Updated upstream
         cv2.imshow("ee", crop_img)
         cv2.imshow("asda", image)
             
+=======
+            keypoints=blob_process(image_enhanced,detector_pupil)
+            print(keypoints)
+            cv2.drawKeypoints(crop_img, keypoints, crop_img, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DEFAULT)
+            cv2.imshow("cara", image)
+            cv2.imshow("image", out_gray)
+            cv2.imshow("sdsa", out_binary)
+            cv2.imshow("ee", crop_img)
+            #cv2.imshow("Modificacion", binary)
+>>>>>>> Stashed changes
     if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
         break
 
