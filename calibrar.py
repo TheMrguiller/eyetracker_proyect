@@ -50,7 +50,7 @@ def get_positions(image,indice):
 
 def check_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l):
     isFile = os.path.isfile("config.json")
-
+    print(isFile)
     if isFile == True:
         write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="r+")
     else:
