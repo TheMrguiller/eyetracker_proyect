@@ -49,24 +49,15 @@ def get_positions(image,indice):
         check_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l)
 
 def check_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l):
-    isFile = os.path.isfile("config.json")
+    isFile = os.path.isfile("config.txt")
     print(isFile)
     if isFile == True:
-        write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="r+")
+        write_txt(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="r+")
     else:
-        write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="w")
+        write_txt(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type="w")
 
-def write_json(indice,cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type): 
-    print(str(cX_r))    
-    print(str(cY_r))    
-    print(str(cX_l))    
-    print(str(cY_l))    
-    print(str(crop_img_r.shape[0]))   
-    print(str(crop_img_r.shape[1]))   
-    print(str(crop_img_r.shape[0]))    
-    print(str(crop_img_l.shape[1]))   
-
-    cadenaCompleta = "cX_r:" + str(cX_r) + ',' + "cY_r:" + str(cY_r) + ',' + "w_r:" + str(crop_img_r.shape[1]) + ',' + "h_r:" + str(crop_img_r.shape[0]) + ',' + "cX_l:" + str(cX_l) + ',' + "w_l:" + str(crop_img_l.shape[1]) + ',' +  "h_l:" + str(crop_img_l.shape[0])
+def write_txt(cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l,write_type): 
+    cadenaCompleta = "cX_r:" + str(cX_r) + ',' + "cY_r:" + str(cY_r) + ',' + "w_r:" + str(crop_img_r.shape[1]) + ',' + "h_r:" + str(crop_img_r.shape[0]) + ',' + "cX_l:" + str(cX_l) + ',' + "cY_l:" + str(cY_l) + ','"w_l:" + str(crop_img_l.shape[1]) + ',' +  "h_l:" + str(crop_img_l.shape[0])
 
     print(cadenaCompleta)    
     with open("config.json",write_type) as file:
