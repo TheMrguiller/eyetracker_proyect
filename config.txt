@@ -1,0 +1,4 @@
+cX_r:29,cY_r:10,w_r:50,h_r:24,cX_l:26,cY_l:11,w_l:51,h_l:25
+cX_r:26,cY_r:11,w_r:50,h_r:23,cX_l:23,cY_l:12,w_l:52,h_l:24
+cX_r:21,cY_r:10,w_r:48,h_r:21,cX_l:14,cY_l:13,w_l:49,h_l:22
+cX_r:28,cY_r:11,w_r:50,h_r:22,cX_l:28,cY_l:8,w_l:49,h_l:23
