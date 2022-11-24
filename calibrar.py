@@ -18,17 +18,21 @@ def get_screen_resolution():
 def onMouse(event, x, y, flags, param):
     global indice
     global copia
-    
     if event == cv2.EVENT_LBUTTONDOWN:
+
         if indice >= 9:
             indice=0
         if x>=lista[indice][0][0] and x<= lista[indice][1][0] and y >= lista[indice][0][1] and y<= lista[indice][1][1]:
-            indice+=1
+            indice += 1
             if indice >= 9:
                 indice=0
             copia=cv2.rectangle(blank_image.copy(), lista[indice][0], lista[indice][1], (255,255,255), -1)
             file = open('config.txt', 'a')
-            file.write(get_positions(image=image,indice=indice) + '\n')
+            puntitos = get_positions(image=image,indice=indice)
+            if puntitos is None:
+                indice = indice - 1
+                copia=cv2.rectangle(blank_image.copy(), lista[indice][0], lista[indice][1], (255,255,255), -1)
+            file.write(puntitos+ '\n')
             file.close()
             
 def create_points_list(height,width):
@@ -105,8 +109,8 @@ if __name__ == "__main__":
     file = createTXT()
     lista=create_points_list(height=height,width=width)
     cv2.rectangle(copia, lista[0][0], lista[0][1], (255,255,255), -1)
-    cv2.namedWindow('MyWindow')
-    cv2.setMouseCallback('MyWindow', onMouse)
+    cv2.namedWindow('Calibrar')
+    cv2.setMouseCallback('Calibrar', onMouse)
     p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor(p)
@@ -115,7 +119,7 @@ if __name__ == "__main__":
     eye_detector=eyeDetector()
     while True:
         _, image = cap.read()
-        cv2.imshow("MyWindow",copia)
+        cv2.imshow("Calibrar",copia)
         
         if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
             readTxt()
