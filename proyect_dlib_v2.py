@@ -44,12 +44,14 @@ while True:
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
         #start_time_ns = time.process_time_ns()
+        #eye_detector.get_eyes_position(image=image,shape=shape)
         cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l=eye_detector.get_eyes_position(image=image,shape=shape)
         #end_time_ns = time.process_time_ns()
         #timer_ns = end_time_ns - start_time_ns
         #print(timer_ns)
-        cv2.circle(crop_img_r, (cX_r, cY_r), 1, (255, 255, 255), -1)  
-        cv2.circle(crop_img_l, (cX_l, cY_l), 1, (255, 255, 255), -1)
+        if cX_r is not None or cX_l is not None :
+            cv2.circle(crop_img_r, (cX_r, cY_r), 1, (255, 255, 255), -1)  
+            cv2.circle(crop_img_l, (cX_l, cY_l), 1, (255, 255, 255), -1)
         cv2.imshow("ojo_derecho",crop_img_r)
         cv2.imshow("ojo_izquierdo",crop_img_l)
     if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
