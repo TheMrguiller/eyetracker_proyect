@@ -3,6 +3,27 @@ import cv2
 import numpy as np
 from numpy.linalg import norm
 
+def readTxt():
+
+    lineasPunto =  []
+    with open('config.txt') as f:
+        lines = f.readlines()
+        for line in lines:
+            lineaUnica = []
+            line = line.strip()
+            splited = line.split(",")
+            #print(splited)
+            for tupla in splited:
+                #print(tupla)
+                tupla = tupla.split(":")
+                #print(tupla[1])  ##todos los valores de una linea
+                lineaUnica.append(int(tupla[1]))
+            lineasPunto.append(lineaUnica)
+        f.close()
+        return lineasPunto
+
+
+
 def eye_on_mask(mask, side,shape):
     points = [shape[i] for i in side]
     points = np.array(points, dtype=np.int32)
@@ -124,8 +145,8 @@ class eyeDetector:
             else:
                 c = max(contours1, key = cv2.contourArea)
                 cX,cY=self.calculate_center(c)
-                cv2.circle(crop_img, (cX, cY), 1, (255, 255, 255), -1)  
-                cv2.imshow("ojo_izquierdo",crop_img)
+                #cv2.circle(crop_img, (cX, cY), 1, (255, 255, 255), -1)  
+                #cv2.imshow("ojo_izquierdo",crop_img)
                 return cX,cY,crop_img
         return None,None,crop_img
 
