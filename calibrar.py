@@ -59,7 +59,10 @@ def get_positions(image,indice):
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
         cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l=eye_detector.get_eyes_position(image=image,shape=shape)
-        return write_txt(cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l)
+        if cX_r is not None and cX_l is not None:
+            return write_txt(cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l)
+        else:
+            return None
 
 def createTXT():
     f = open('config.txt', 'w')
@@ -87,6 +90,7 @@ def readTxt():
             lineasPunto.append(lineaUnica)
         print(lineasPunto)
         f.close()
+        return lineasPunto
 
 
 if __name__ == "__main__":
