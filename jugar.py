@@ -13,36 +13,40 @@ def compararPuntos(puntos, puntoLeido):
     cuadranteElegido = 0
 
     #print(len(puntos))
-    print(puntoLeido)
+    #print(puntoLeido)
 
     for puntito in puntos:
 
         distancia = calcular_distancia(puntito,puntoLeido=puntoLeido)
-        np.linalg.norm(np.array(puntos[i]) - np.array(puntoLeido))
+        print(distancia)
         #print(distancia)
         if distancia < distanciaMinima:
+            distanciaMinima = distancia
             cuadranteElegido = i
         i += 1
-    
+
+
+    #print(cuadranteElegido)
     return cuadranteElegido
 
 def calcular_distancia(puntito,puntoLeido): ## recibo los dos puntos y tengo que escalarlos. 
 
     ###puntoEscalado = PuntoLeido * PguardadoSIZE / PuntoLeidoSIZE. Esto devuelve el punto correcto
-    cX_r_escaled = (puntoLeido[0] * puntito[2].shape[0]) / puntoLeido[2].shape[0]  ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
-    cY_r_escaled = (puntoLeido[1] * puntito[2].shape[1]) / puntoLeido[2].shape[1]  ##x deberia ser ancho e y largo no??
-    cX_l_escaled = (puntoLeido[3] * puntito[5].shape[0]) / puntoLeido[5].shape[0]
-    cY_l_escaled = (puntoLeido[4] * puntito[5].shape[1]) / puntoLeido[5].shape[1]
+    #print(puntoLeido[2])
+    cX_r_escaled = (puntoLeido[0] * puntito[2]) / puntoLeido[2].shape[1]  ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
+    cY_r_escaled = (puntoLeido[1] * puntito[3]) / puntoLeido[2].shape[0]  ##x deberia ser ancho e y largo no??
+    cX_l_escaled = (puntoLeido[3] * puntito[6]) / puntoLeido[5].shape[1]
+    cY_l_escaled = (puntoLeido[4] * puntito[7]) / puntoLeido[5].shape[0]
 
     cX_r_saved = puntito[0]
     cY_r_saved = puntito[1]
     cX_l_saved = puntito[3]
     cY_l_saved = puntito[4]
 
-    c_r = (cX_r_saved, cY_r_saved) 
-    c_l = (cX_l_saved, cY_l_saved)
-    c_r_escaled = (cX_r_escaled, cY_r_escaled)
-    c_l_escaled = (cX_l_escaled, cY_l_escaled)
+    c_r = np.array([cX_r_saved, cY_r_saved]) 
+    c_l = np.array([cX_l_saved, cY_l_saved])
+    c_r_escaled = np.array([cX_r_escaled, cY_r_escaled])
+    c_l_escaled = np.array([cX_l_escaled, cY_l_escaled])
      ##tenemos ya los puntos. Hay que compararlos por pares
 
 
@@ -57,6 +61,8 @@ def calcular_distancia(puntito,puntoLeido): ## recibo los dos puntos y tengo que
 def calcularDistanciaEuclidea(ParPuntoXY, ParPuntoXY_actual):
     distanciaEntrePuntos = 1000
     ##calculamos la distancia euclide entre dos puntos
+    distanciaEntrePuntos = np.linalg.norm(ParPuntoXY - ParPuntoXY_actual)
+
     return distanciaEntrePuntos
 
 
@@ -65,6 +71,14 @@ def calcularDistanciaEuclidea(ParPuntoXY, ParPuntoXY_actual):
 
 
 if __name__ == "__main__":
+    numberCuadrants = 9 #variable que recibiremos mediante funcion luego que nos dira el numero de cudarantes
+    objetiveCuadrant = 0
+
+    img = cv2.imread('imageTest.jpg')
+    img_copia= img.copy()
+    segmentador=SegmentPinter(img,numberCuadrants)
+    segmentador.refresh_list()
+    image=segmentador.paint_cuadrants()
     p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor(p)
@@ -83,6 +97,8 @@ if __name__ == "__main__":
         # detect faces in the grayscale image
         rects = detector(gray, 0)
         rect=get_frontal_face(rects)
+
+        
         if rect ==0:
             pass
         else:
@@ -98,10 +114,14 @@ if __name__ == "__main__":
             #end_time_ns = time.process_time_ns()
             #timer_ns = end_time_ns - start_time_ns
             #print(timer_ns)
-            if cX_r is not None or cX_l is not None :
-                compararPuntos(puntos, puntosAct)
+            if cX_r is not None and cX_l is not None :
+                objetiveCuadrant = compararPuntos(puntos, puntosAct)
+                img=segmentador.paint_objective(image=img_copia,objetiveCuadrant=objetiveCuadrant)
+                
             else:
-                print('Do nothing') ##mantener dibujado el ultimo
+                pass
+                ##mantener dibujado el ultimo
 
+            cv2.imshow('cuadrantes', img)
             if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
                 break
