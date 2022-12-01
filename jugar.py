@@ -17,19 +17,20 @@ def compararPuntos(puntos, puntoLeido):
 
     for puntito in puntos:
 
-        distancia = calcular_distancia(puntito,puntoLeido=puntoLeido)
-        print(distancia)
+        distancia = calcular_distancia(puntito,puntoLeido=puntoLeido,seccion=i)
+        
         #print(distancia)
         if distancia < distanciaMinima:
             distanciaMinima = distancia
             cuadranteElegido = i
+            print(f"Seccion:{i} y distancia:{distancia}")
         i += 1
 
 
     #print(cuadranteElegido)
     return cuadranteElegido
 
-def calcular_distancia(puntito,puntoLeido): ## recibo los dos puntos y tengo que escalarlos. 
+def calcular_distancia(puntito,puntoLeido,seccion): ## recibo los dos puntos y tengo que escalarlos. 
 
     ###puntoEscalado = PuntoLeido * PguardadoSIZE / PuntoLeidoSIZE. Esto devuelve el punto correcto
     #print(puntoLeido[2])
@@ -52,11 +53,16 @@ def calcular_distancia(puntito,puntoLeido): ## recibo los dos puntos y tengo que
 
     distanciaDerecha = calcularDistanciaEuclidea(c_r, c_r_escaled)
     distanciaIzquierda = calcularDistanciaEuclidea(c_l, c_l_escaled)
-
-    if distanciaDerecha >= distanciaIzquierda:
+    #distancia = (distanciaDerecha + distanciaIzquierda ) / 2
+    if seccion==0 or seccion==3 or seccion==6:
         return distanciaIzquierda
-    else:
-        return distanciaDerecha   
+    elif seccion==1 or seccion==4 or seccion== 7:
+        if distanciaDerecha >= distanciaIzquierda:
+            return distanciaIzquierda
+        else:
+            return distanciaDerecha  
+    else :
+        return  distanciaDerecha
 
 def calcularDistanciaEuclidea(ParPuntoXY, ParPuntoXY_actual):
     distanciaEntrePuntos = 1000
@@ -76,7 +82,7 @@ if __name__ == "__main__":
 
     img = cv2.imread('imageTest.jpg')
     img_copia= img.copy()
-    segmentador=SegmentPinter(img,numberCuadrants)
+    segmentador=SegmentPinter(img_copia,numberCuadrants)
     segmentador.refresh_list()
     img_copia=segmentador.paint_cuadrants()
     p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
@@ -84,7 +90,7 @@ if __name__ == "__main__":
     predictor = dlib.shape_predictor(p)
 
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FPS, 60)
+    cap.set(cv2.CAP_PROP_FPS, 30)
     eye_detector=eyeDetector()
 
     puntos = readTxt()
@@ -125,3 +131,12 @@ if __name__ == "__main__":
             cv2.imshow('cuadrantes', img)
             if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
                 break
+
+###### Ideas de lo que puede ir mal##########
+# Resize del ojo puede generar basura
+# La distancia darle una vuelta mas, hacer por cuadrantes coger un ojo, coger solo un ojo
+# La iluminacion puede afectar
+# Probar con diferentes frames rate
+# Probar con mi ordenador (Guiller)
+# Darle alguna vuelta a la captura del ojo
+# Probar la funcion de ajuste de puntos en vivo comparando con tu punto real
