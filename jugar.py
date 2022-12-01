@@ -78,7 +78,7 @@ if __name__ == "__main__":
     img_copia= img.copy()
     segmentador=SegmentPinter(img,numberCuadrants)
     segmentador.refresh_list()
-    image=segmentador.paint_cuadrants()
+    img_copia=segmentador.paint_cuadrants()
     p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor(p)
