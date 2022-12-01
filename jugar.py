@@ -12,26 +12,53 @@ def compararPuntos(puntos, puntoLeido):
     distanciaMinima = 1000
     cuadranteElegido = 0
 
-    print(len(puntos))
+    #print(len(puntos))
+    print(puntoLeido)
 
     for puntito in puntos:
 
         distancia = calcular_distancia(puntito,puntoLeido=puntoLeido)
         np.linalg.norm(np.array(puntos[i]) - np.array(puntoLeido))
-        print(distancia)
+        #print(distancia)
         if distancia < distanciaMinima:
             cuadranteElegido = i
         i += 1
     
     return cuadranteElegido
 
-def calcular_distancia(puntito,puntoLeido):
-    righteyeratiowidth = puntito[3]/puntito[2]*puntoLeido[2].shape[1]
-    righteyeratioheight = puntito[2]/puntito[3]*puntoLeido[2].shape[0]
-    lefteyeratiowidth = puntito[8]/puntito[7]*puntoLeido[5].shape[1]
-    lefteyeratioheight = puntito[7]/puntito[8]*puntoLeido[5].shape[0]
-    righteyepoint = [puntito[0],puntito[1]]
-    lefteyepoint = [puntito[4],puntito[5]]
+def calcular_distancia(puntito,puntoLeido): ## recibo los dos puntos y tengo que escalarlos. 
+
+    ###puntoEscalado = PuntoLeido * PguardadoSIZE / PuntoLeidoSIZE. Esto devuelve el punto correcto
+    cX_r_escaled = (puntoLeido[0] * puntito[2].shape[0]) / puntoLeido[2].shape[0]  ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
+    cY_r_escaled = (puntoLeido[1] * puntito[2].shape[1]) / puntoLeido[2].shape[1]  ##x deberia ser ancho e y largo no??
+    cX_l_escaled = (puntoLeido[3] * puntito[5].shape[0]) / puntoLeido[5].shape[0]
+    cY_l_escaled = (puntoLeido[4] * puntito[5].shape[1]) / puntoLeido[5].shape[1]
+
+    cX_r_saved = puntito[0]
+    cY_r_saved = puntito[1]
+    cX_l_saved = puntito[3]
+    cY_l_saved = puntito[4]
+
+    c_r = (cX_r_saved, cY_r_saved) 
+    c_l = (cX_l_saved, cY_l_saved)
+    c_r_escaled = (cX_r_escaled, cY_r_escaled)
+    c_l_escaled = (cX_l_escaled, cY_l_escaled)
+     ##tenemos ya los puntos. Hay que compararlos por pares
+
+
+    distanciaDerecha = calcularDistanciaEuclidea(c_r, c_r_escaled)
+    distanciaIzquierda = calcularDistanciaEuclidea(c_l, c_l_escaled)
+
+    if distanciaDerecha >= distanciaIzquierda:
+        return distanciaIzquierda
+    else:
+        return distanciaDerecha   
+
+def calcularDistanciaEuclidea(ParPuntoXY, ParPuntoXY_actual):
+    distanciaEntrePuntos = 1000
+    ##calculamos la distancia euclide entre dos puntos
+    return distanciaEntrePuntos
+
 
 #https://stackoverflow.com/questions/40800434/scale-resolution-of-image-keeping-point-locations
 
@@ -47,7 +74,7 @@ if __name__ == "__main__":
     eye_detector=eyeDetector()
 
     puntos = readTxt()
-    print(puntos)
+    #print(puntos)
 
     while(True):
         _, image = cap.read()
