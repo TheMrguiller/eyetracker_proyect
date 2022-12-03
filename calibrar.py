@@ -10,21 +10,16 @@ from screeninfo import get_monitors
 
 
 
-def get_screen_resolution():
-    output = subprocess.Popen('xrandr | grep "\*" | cut -d" " -f4',shell=True, stdout=subprocess.PIPE).communicate()[0]
-    resolution = output.split()[0].split(b'x')
-    return {'width': resolution[0], 'height': resolution[1]}
-
 def onMouse(event, x, y, flags, param):
     global indice
     global copia
+    global calibracion_activa
     if event == cv2.EVENT_LBUTTONDOWN:
-
-        if indice >= 9:
-            indice=0
+  
         if x>=lista[indice][0][0] and x<= lista[indice][1][0] and y >= lista[indice][0][1] and y<= lista[indice][1][1]:
             indice += 1
             if indice >= 9:
+                calibracion_activa=False
                 indice=0
             copia=cv2.rectangle(blank_image.copy(), lista[indice][0], lista[indice][1], (255,255,255), -1)
             file = open('config.txt', 'a')
@@ -49,7 +44,7 @@ def create_points_list(height,width):
 
 def get_positions(image,indice):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    print(indice)
+    
     rects = detector(gray, 0)
     rect=get_frontal_face(rects)
     if rect ==0:
@@ -72,27 +67,6 @@ def write_txt(cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l):
     cadenaCompleta = "cX_r:" + str(cX_r) + ',' + "cY_r:" + str(cY_r) + ',' + "w_r:" + str(crop_img_r.shape[1]) + ',' + "h_r:" + str(crop_img_r.shape[0]) + ',' + "cX_l:" + str(cX_l) + ',' + "cY_l:" + str(cY_l) + ','"w_l:" + str(crop_img_l.shape[1]) + ',' +  "h_l:" + str(crop_img_l.shape[0])
     return cadenaCompleta
 
-def readTxt():
-
-    lineasPunto =  []
-    with open('config.txt') as f:
-        lines = f.readlines()
-        for line in lines:
-            lineaUnica = []
-            line = line.strip()
-            splited = line.split(",")
-            #print(splited)
-            for tupla in splited:
-                #print(tupla)
-                tupla = tupla.split(":")
-                #print(tupla[1])  ##todos los valores de una linea
-                lineaUnica.append(int(tupla[1]))
-            lineasPunto.append(lineaUnica)
-        print(lineasPunto)
-        f.close()
-        return lineasPunto
-
-
 if __name__ == "__main__":
 
     indice=0
@@ -105,7 +79,7 @@ if __name__ == "__main__":
 
     width = int(width * 0.91)
     height = int(height * 0.91)
-    size = get_screen_resolution()
+
     blank_image = np.zeros((height,width,3), np.uint8)
     copia = blank_image.copy()
     height = blank_image.shape[0]
@@ -121,13 +95,15 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FPS, 60)
     eye_detector=eyeDetector()
-    while True:
+    calibracion_activa =True
+    while calibracion_activa:
         _, image = cap.read()
         cv2.imshow("Calibrar",copia)
         
-        if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed
-            readTxt()
+        if cv2.waitKey(1) & 0xFF == ord('s'): # escape when q is pressed
             break
+        if cv2.getWindowProperty('Calibrar',cv2.WND_PROP_VISIBLE) < 1:      
+            break 
             
     cv2.destroyAllWindows()
     cap.release()

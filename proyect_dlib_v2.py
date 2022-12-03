@@ -20,6 +20,21 @@ import time
 #https://towardsdatascience.com/real-time-eye-tracking-using-opencv-and-dlib-b504ca724ac6
 #https://medium.com/@stepanfilonov/tracking-your-eyes-with-python-3952e66194a6
 
+#cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l
+#cX_r:23,cY_r:7,w_r:46,h_r:19,cX_l:18,cY_l:7,w_l:44,h_l:20
+def pintar_calibracion(puntos,puntoLeido,image_r,image_l):
+    """ self.width = self.image.shape[1]  ##solo cogemos el height y la width
+        self.height = self.image.shape[0]"""
+    for puntito in puntos:
+
+        cX_r_escaled = int(puntito[0] * (puntoLeido[2].shape[1] / puntito[2]  ) ) ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
+        cY_r_escaled = int(puntito[1] * (puntoLeido[2].shape[0] / puntito[3] ) ) ##x deberia ser ancho e y largo no??
+        cX_l_escaled = int(puntito[4] * (puntoLeido[5].shape[1] / puntito[6] ))
+        cY_l_escaled = int(puntito[5] * (puntoLeido[5].shape[0] / puntito[7]  ))
+
+        cv2.circle(image_r, (cX_r_escaled, cY_r_escaled), 1, (0, 255, 0), -1)  
+        cv2.circle(image_l, (cX_l_escaled, cY_l_escaled), 1, (0, 255, 0), -1)
+     
 
 # the facial landmark predictor
 p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
@@ -29,6 +44,9 @@ predictor = dlib.shape_predictor(p)
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FPS, 60)
 eye_detector=eyeDetector()
+
+puntos = readTxt()
+
 while True:
     # load the input image and convert it to grayscale
     _, image = cap.read()
@@ -49,9 +67,13 @@ while True:
         #end_time_ns = time.process_time_ns()
         #timer_ns = end_time_ns - start_time_ns
         #print(timer_ns)
-        if cX_r is not None or cX_l is not None :
+        puntosAct = [cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l]
+        if cX_r is not None and cX_l is not None :
+            
             cv2.circle(crop_img_r, (cX_r, cY_r), 1, (255, 255, 255), -1)  
             cv2.circle(crop_img_l, (cX_l, cY_l), 1, (255, 255, 255), -1)
+        pintar_calibracion(puntos,puntosAct,crop_img_r,crop_img_l)
+
         cv2.imshow("ojo_derecho",crop_img_r)
         cv2.imshow("ojo_izquierdo",crop_img_l)
     if cv2.waitKey(1) & 0xFF == ord('q'): # escape when q is pressed

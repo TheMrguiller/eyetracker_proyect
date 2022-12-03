@@ -46,7 +46,7 @@ class Ui_MainWindow(object):
 
 
     def funcionBoton1(self):
-        os.system("python pintarSobreImagen_v2.py")
+        os.system("python jugar.py")
         print("Has clicado al boton1")
 
     def funcionBoton2(self):

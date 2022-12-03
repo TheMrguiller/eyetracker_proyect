@@ -3,6 +3,68 @@ import cv2
 import numpy as np
 from numpy.linalg import norm
 
+def compararPuntos(puntos, puntoLeido):
+
+    i = 0
+    distanciaMinima = 1000
+    cuadranteElegido = 0
+
+    #print(len(puntos))
+    #print(puntoLeido)
+
+    for puntito in puntos:
+
+        distancia = calcular_distancia(puntito,puntoLeido=puntoLeido,seccion=i)
+        
+        #print(distancia)
+        if distancia < distanciaMinima:
+            distanciaMinima = distancia
+            cuadranteElegido = i
+            #print(f"Seccion:{i} y distancia:{distancia}")
+        i += 1
+
+
+    #print(cuadranteElegido)
+    return cuadranteElegido
+
+def calcular_distancia(puntito,puntoLeido,seccion): ## recibo los dos puntos y tengo que escalarlos. 
+
+    ###puntoEscalado = PuntoLeido * PguardadoSIZE / PuntoLeidoSIZE. Esto devuelve el punto correcto
+    #print(puntoLeido[2])
+    cX_r_escaled = int(puntito[0] * (puntoLeido[2].shape[1] / puntito[2]  ) ) ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
+    cY_r_escaled = int(puntito[1] * (puntoLeido[2].shape[0] / puntito[3] ) ) ##x deberia ser ancho e y largo no??
+    cX_l_escaled = int(puntito[4] * (puntoLeido[5].shape[1] / puntito[6] ))
+    cY_l_escaled = int(puntito[5] * (puntoLeido[5].shape[0] / puntito[7]  ))
+
+    cX_r_saved = puntito[0]
+    cY_r_saved = puntito[1]
+    cX_l_saved = puntito[3]
+    cY_l_saved = puntito[4]
+
+    c_r = np.array([cX_r_saved, cY_r_saved]) 
+    c_l = np.array([cX_l_saved, cY_l_saved])
+    c_r_escaled = np.array([cX_r_escaled, cY_r_escaled])
+    c_l_escaled = np.array([cX_l_escaled, cY_l_escaled])
+     ##tenemos ya los puntos. Hay que compararlos por pares
+
+
+    distanciaDerecha = calcularDistanciaEuclidea(c_r, c_r_escaled)
+    distanciaIzquierda = calcularDistanciaEuclidea(c_l, c_l_escaled)
+    #distancia = (distanciaDerecha + distanciaIzquierda ) / 2
+   
+    if distanciaDerecha >= distanciaIzquierda:
+        return distanciaIzquierda
+    else:
+        return distanciaDerecha  
+
+
+def calcularDistanciaEuclidea(ParPuntoXY, ParPuntoXY_actual):
+    
+    ##calculamos la distancia euclide entre dos puntos
+    distanciaEntrePuntos = np.linalg.norm(ParPuntoXY - ParPuntoXY_actual)
+
+    return distanciaEntrePuntos
+
 def readTxt():
 
     lineasPunto =  []
@@ -100,14 +162,16 @@ class eyeDetector:
 
     #Funcion que devuelve la posicion del ojo dado una mascara, version mejorada.
     def get_positon_v2(self,mask):
-        mask = cv2.dilate(mask, self.kernel, 5)#Aumentamos el tamaño de la mascara
+        mask = cv2.dilate(mask, self.kernel, 1)#Aumentamos el tamaño de la mascara
+        
         contours, hier = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE) #Rectangulo exterior con aproximacion simple
+        cv2.CHAIN_APPROX_NONE) #Rectangulo exterior con aproximacion simple
         c=contours[0]
+        
         x,y,w,h = cv2.boundingRect(c)
-        # W 35 to 40
-        #H 16 a 20
+        
         crop_img = self.image[y:y+h, x:x+w]
+        
         brightness=self.brightness_calculator(crop_img)
         if brightness < 25:
             crop_img=self.brightness(crop_img,0.4)    
@@ -139,7 +203,7 @@ class eyeDetector:
             opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
             dilate = cv2.dilate(opening,kernel,iterations = 1)
             
-            contours1, hierarchy = cv2.findContours(dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours1, hierarchy = cv2.findContours(dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
             if not contours1:
                 pass
             else:
