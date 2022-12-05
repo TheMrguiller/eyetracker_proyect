@@ -47,14 +47,13 @@ class Ui_MainWindow(object):
 
     def funcionBoton1(self):
         os.system("python jugar.py")
-        print("Has clicado al boton1")
+        
 
     def funcionBoton2(self):
         os.system("python calibrar.py")
-        print("Has clicado al boton2")
+        
 
     def funcionBoton3(self):
-        print("Has clicado al boton3")
         self.close() 
 
 

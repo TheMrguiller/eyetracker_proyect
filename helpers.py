@@ -9,30 +9,20 @@ def compararPuntos(puntos, puntoLeido):
     distanciaMinima = 1000
     cuadranteElegido = 0
 
-    #print(len(puntos))
-    #print(puntoLeido)
-
     for puntito in puntos:
-
-        distancia = calcular_distancia(puntito,puntoLeido=puntoLeido,seccion=i)
-        
-        #print(distancia)
+        distancia = calcular_distancia(puntito,puntoLeido=puntoLeido,seccion=i)  
         if distancia < distanciaMinima:
             distanciaMinima = distancia
             cuadranteElegido = i
-            #print(f"Seccion:{i} y distancia:{distancia}")
         i += 1
 
-
-    #print(cuadranteElegido)
     return cuadranteElegido
 
-def calcular_distancia(puntito,puntoLeido,seccion): ## recibo los dos puntos y tengo que escalarlos. 
+def calcular_distancia(puntito,puntoLeido,seccion):
 
-    ###puntoEscalado = PuntoLeido * PguardadoSIZE / PuntoLeidoSIZE. Esto devuelve el punto correcto
-    #print(puntoLeido[2])
-    cX_r_escaled = int(puntito[0] * (puntoLeido[2].shape[1] / puntito[2]  ) ) ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
-    cY_r_escaled = int(puntito[1] * (puntoLeido[2].shape[0] / puntito[3] ) ) ##x deberia ser ancho e y largo no??
+    
+    cX_r_escaled = int(puntito[0] * (puntoLeido[2].shape[1] / puntito[2]  ) )
+    cY_r_escaled = int(puntito[1] * (puntoLeido[2].shape[0] / puntito[3] ) ) 
     cX_l_escaled = int(puntito[4] * (puntoLeido[5].shape[1] / puntito[6] ))
     cY_l_escaled = int(puntito[5] * (puntoLeido[5].shape[0] / puntito[7]  ))
 
@@ -43,24 +33,19 @@ def calcular_distancia(puntito,puntoLeido,seccion): ## recibo los dos puntos y t
 
     c_r = np.array([cX_r_saved, cY_r_saved]) 
     c_l = np.array([cX_l_saved, cY_l_saved])
-    c_r_escaled = np.array([cX_r_escaled, cY_r_escaled])
-    c_l_escaled = np.array([cX_l_escaled, cY_l_escaled])
-     ##tenemos ya los puntos. Hay que compararlos por pares
-
-
-    distanciaDerecha = calcularDistanciaEuclidea(c_r, c_r_escaled)
-    distanciaIzquierda = calcularDistanciaEuclidea(c_l, c_l_escaled)
-    #distancia = (distanciaDerecha + distanciaIzquierda ) / 2
+    c_r_escaledp = np.array([cX_r_escaled, cY_r_escaled])
+    c_l_escaledp = np.array([cX_l_escaled, cY_l_escaled])
+    
+    distanciaDerecha = calcularDistanciaEuclidea(c_r, c_r_escaledp)
+    distanciaIzquierda = calcularDistanciaEuclidea(c_l, c_l_escaledp)
    
     if distanciaDerecha >= distanciaIzquierda:
         return distanciaIzquierda
     else:
         return distanciaDerecha  
 
-
 def calcularDistanciaEuclidea(ParPuntoXY, ParPuntoXY_actual):
     
-    ##calculamos la distancia euclide entre dos puntos
     distanciaEntrePuntos = np.linalg.norm(ParPuntoXY - ParPuntoXY_actual)
 
     return distanciaEntrePuntos
@@ -83,7 +68,6 @@ def readTxt():
             lineasPunto.append(lineaUnica)
         f.close()
         return lineasPunto
-
 
 
 def eye_on_mask(mask, side,shape):
@@ -109,22 +93,18 @@ def brightness(image,gamma=0.4):
         return cv2.LUT(image, lookUpTable)
 
 class eyeDetector:
-###Nuevas ideas
-# Utilizar kmeans para clasificar y agrupar
-#Coger la mascara y de esa coger el mas negro
 
-
-    #Inicializamos las variables que no cambian en la ejecucion
+   
     def __init__(self):
         self.right = [36, 37, 38, 39, 40, 41] # keypoint indices for left eye
         self.left = [42, 43, 44, 45, 46, 47] # keypoint indices for right eye
         self.kernel = np.ones((9, 9), np.uint8)
-    #Devuelve las mascaras de cada ojo
+    
     def eye_mask_generator(self):
         mask_right=np.zeros(self.image.shape[:2], dtype=np.uint8)
         mask_left=np.zeros(self.image.shape[:2], dtype=np.uint8)
-        mask_right = self.eye_on_mask(mask_right, self.right)
-        mask_left = self.eye_on_mask(mask_left, self.left)
+        mask_right = self.from_mask_points_get_mask(mask_right, self.right)
+        mask_left = self.from_mask_points_get_mask(mask_left, self.left)
         return mask_right,mask_left
     #Funcion que devuelve la posicion de los ojos
     def get_eyes_position(self,image,shape):
@@ -132,20 +112,16 @@ class eyeDetector:
         self.shape=shape
         mask_right,mask_left=self.eye_mask_generator()
         cX_r,cY_r,crop_img_r=self.get_positon_v2(mask_right)
-        #self.get_positon_v2(mask_left)
         cX_l,cY_l,crop_img_l=self.get_positon_v2(mask_left)
         return cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l
 
     #Funcion que devuelve la posicion del ojo dado una mascara, version antigua.
     def get_position(self,mask):
-        mask = cv2.dilate(mask, self.kernel, 5)#Aumentamos el tamaño de la mascara
-        
+        mask = cv2.dilate(mask, self.kernel, 5)
         contours, hier = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE) #Rectangulo exterior con aproximacion simple
+        cv2.CHAIN_APPROX_SIMPLE) 
         c=contours[0]
         x,y,w,h = cv2.boundingRect(c)
-        # W 35 to 40
-        #H 16 a 20
         crop_img = self.image[y:y+h, x:x+w]
         crop_img=self.brightness(crop_img,0.4)
         crop_img_gray = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
@@ -161,20 +137,20 @@ class eyeDetector:
         return cX,cY,crop_img
 
     #Funcion que devuelve la posicion del ojo dado una mascara, version mejorada.
-    def get_positon_v2(self,mask):
-        mask = cv2.dilate(mask, self.kernel, 1)#Aumentamos el tamaño de la mascara
+    def get_positon_v2(self,eye_mask):
+        dilated_mask = cv2.dilate(eye_mask, self.kernel, 1)
         
-        contours, hier = cv2.findContours(mask, cv2.RETR_EXTERNAL,
+        contours, hier = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_NONE) #Rectangulo exterior con aproximacion simple
-        c=contours[0]
+        max_c=contours[0]
         
-        x,y,w,h = cv2.boundingRect(c)
+        x,y,w,h = cv2.boundingRect(max_c)
         
         crop_img = self.image[y:y+h, x:x+w]
         
-        brightness=self.brightness_calculator(crop_img)
-        if brightness < 25:
-            crop_img=self.brightness(crop_img,0.4)    
+        brightness_value=self.brightness_calculator(crop_img)
+        if brightness_value < 25:
+            crop_img=self.change_brightness_v2(crop_img,0.4)    
         crop_img_gray = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
         image_enhanced = cv2.equalizeHist(crop_img_gray)
         image_enhanced=cv2.GaussianBlur(image_enhanced,(3,3),0)
@@ -182,33 +158,33 @@ class eyeDetector:
         bg=cv2.morphologyEx(image_enhanced, cv2.MORPH_DILATE, se)
         out_gray=cv2.divide(image_enhanced, bg, scale=255)
         
-        out_binary=cv2.threshold(out_gray, 120, 255, cv2.THRESH_BINARY_INV )[1]
+        image_binary=cv2.threshold(out_gray, 120, 255, cv2.THRESH_BINARY_INV )[1]
         
-        contours, hier = cv2.findContours(out_binary, cv2.RETR_TREE,
+        contours, hier = cv2.findContours(image_binary, cv2.RETR_TREE,
         cv2.CHAIN_APPROX_NONE)
-        mask=np.zeros(crop_img.shape[:2], dtype=np.uint8)
-        c = max(contours, key = cv2.contourArea)
-        mask=cv2.drawContours(mask, [c], -1, color=255, thickness=cv2.FILLED)
+        eye_mask=np.zeros(crop_img.shape[:2], dtype=np.uint8)
+        max_c = max(contours, key = cv2.contourArea)
+        eye_mask=cv2.drawContours(eye_mask, [max_c], -1, color=255, thickness=cv2.FILLED)
         
         kernel = np.ones((3,3),np.uint8)
-        erosion = cv2.erode(mask,kernel,iterations = 2)
-        contours, hier = cv2.findContours(erosion, cv2.RETR_TREE,
+        eye_mask_erode = cv2.erode(eye_mask,kernel,iterations = 2)
+        contours, hier = cv2.findContours(eye_mask_erode, cv2.RETR_TREE,
         cv2.CHAIN_APPROX_NONE)
         if not contours:
             pass
         else:
-            c = max(contours, key = cv2.contourArea)
-            mask=np.zeros(crop_img.shape[:2], dtype=np.uint8)
-            erosion=cv2.drawContours(mask, [c], -1, color=255, thickness=cv2.FILLED)
-            opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
-            dilate = cv2.dilate(opening,kernel,iterations = 1)
+            max_c = max(contours, key = cv2.contourArea)
+            eye_mask=np.zeros(crop_img.shape[:2], dtype=np.uint8)
+            eye_mask_erode=cv2.drawContours(eye_mask, [max_c], -1, color=255, thickness=cv2.FILLED)
+            eye_mask_opening = cv2.morphologyEx(eye_mask_erode, cv2.MORPH_OPEN, kernel)
+            eye_mask_dilate = cv2.dilate(eye_mask_opening,kernel,iterations = 1)
             
-            contours1, hierarchy = cv2.findContours(dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-            if not contours1:
+            final_contour, hierarchy = cv2.findContours(eye_mask_dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+            if not final_contour:
                 pass
             else:
-                c = max(contours1, key = cv2.contourArea)
-                cX,cY=self.calculate_center(c)
+                max_c = max(final_contour, key = cv2.contourArea)
+                cX,cY=self.calculate_center(max_c)
                 #cv2.circle(crop_img, (cX, cY), 1, (255, 255, 255), -1)  
                 #cv2.imshow("ojo_izquierdo",crop_img)
                 return cX,cY,crop_img
@@ -223,7 +199,7 @@ class eyeDetector:
         return cX,cY
 
     #Genera las mascaras de cada ojo   
-    def eye_on_mask(self,mask, side):
+    def from_mask_points_get_mask(self,mask, side):
         points = [self.shape[i] for i in side]
         points = np.array(points, dtype=np.int32)
         mask = cv2.fillConvexPoly(mask, points, 255)
@@ -250,7 +226,7 @@ class eyeDetector:
             return np.average(img)
 
     #aumenta el brillo de la imagen, en nuestro caso la que solo muestra el ojo
-    def brightness(self,image,gamma=0.4):
+    def change_brightness_v2(self,image,gamma=0.4):
         lookUpTable = np.empty((1,256), np.uint8)
         for i in range(256):
             lookUpTable[0,i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
