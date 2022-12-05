@@ -10,6 +10,10 @@ pip install PyQt5
 sudo apt-get install qttools5-dev-tools
 pip install screeninfo
 ```
+## Puesta en marcha
+```
+python applicacionUi.py
+```
 ## Informacion general
 Ese proyecto esta formado principalment por 4 elementos:
 * aplicacionUi.py: Se trata de la aplicacion desarrollada, en esta se observa tres elementos: jugar, calibrar y salir
