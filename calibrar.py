@@ -15,22 +15,27 @@ def onMouse(event, x, y, flags, param):
     global copia
     global calibracion_activa
     if event == cv2.EVENT_LBUTTONDOWN:
-  
+        #Si el click esta dentro de cuadrado generado
         if x>=lista[indice][0][0] and x<= lista[indice][1][0] and y >= lista[indice][0][1] and y<= lista[indice][1][1]:
             indice += 1
             if indice >= 9:
                 calibracion_activa=False
                 indice=0
+            #Dibujamos el nuevo cuadrante
             copia=cv2.rectangle(blank_image.copy(), lista[indice][0], lista[indice][1], (255,255,255), -1)
             file = open('config.txt', 'a')
-            puntitos = get_positions(image=image,indice=indice)
+            #Obtenemos los puntos del ojo
+            puntitos = get_eyes_positions(image=image,indice=indice)
+            #Si el punto lo se ha obtenido correctamente se vuelve al caso anterior
             if puntitos is None:
-                indice = indice - 1
+                if indice !=0:
+                    indice = indice - 1
                 copia=cv2.rectangle(blank_image.copy(), lista[indice][0], lista[indice][1], (255,255,255), -1)
-            file.write(puntitos+ '\n')
+            else:
+                file.write(puntitos+ '\n')
             file.close()
             
-def create_points_list(height,width):
+def create_calibration_points_list(height,width):
     seccion0= [(0,0),(50,50)]
     seccion1= [(int(width/2)-25,0),(int(width/2)+25,50)]
     seccion2= [(width-50,0),(width,50)]
@@ -42,7 +47,7 @@ def create_points_list(height,width):
     seccion8 = [(width-50,height-50),(width,height)]
     return [seccion0,seccion1,seccion2,seccion3,seccion4,seccion5,seccion6,seccion7,seccion8]
 
-def get_positions(image,indice):
+def get_eyes_positions(image,indice):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
     rects = detector(gray, 0)
@@ -79,16 +84,16 @@ if __name__ == "__main__":
 
     width = int(width * 0.91)
     height = int(height * 0.91)
-
+    
     blank_image = np.zeros((height,width,3), np.uint8)
     copia = blank_image.copy()
-    height = blank_image.shape[0]
-    width = blank_image.shape[1]
     file = createTXT()
-    lista=create_points_list(height=height,width=width)
+    lista=create_calibration_points_list(height=height,width=width)
+    #Pintar el primer punto de calibracion
     cv2.rectangle(copia, lista[0][0], lista[0][1], (255,255,255), -1)
     cv2.namedWindow('Calibrar')
     cv2.setMouseCallback('Calibrar', onMouse)
+    #Creamos el detectos de puntos en la cara
     p = "facial-landmarks-recognition-master/shape_predictor_68_face_landmarks.dat"
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor(p)
@@ -96,6 +101,7 @@ if __name__ == "__main__":
     cap.set(cv2.CAP_PROP_FPS, 60)
     eye_detector=eyeDetector()
     calibracion_activa =True
+
     while calibracion_activa:
         _, image = cap.read()
         cv2.imshow("Calibrar",copia)

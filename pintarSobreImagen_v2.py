@@ -7,7 +7,7 @@ from helpers import SegmentPinter
 
 
 
-numberCuadrants = 9 #variable que recibiremos mediante funcion luego que nos dira el numero de cudarantes
+numberCuadrants = 9 
 objetiveCuadrant = 0
 
 img = cv2.imread('imageTest.jpg')

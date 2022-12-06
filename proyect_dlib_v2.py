@@ -20,11 +20,8 @@ import time
 #https://towardsdatascience.com/real-time-eye-tracking-using-opencv-and-dlib-b504ca724ac6
 #https://medium.com/@stepanfilonov/tracking-your-eyes-with-python-3952e66194a6
 
-#cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l
-#cX_r:23,cY_r:7,w_r:46,h_r:19,cX_l:18,cY_l:7,w_l:44,h_l:20
+
 def pintar_calibracion(puntos,puntoLeido,image_r,image_l):
-    """ self.width = self.image.shape[1]  ##solo cogemos el height y la width
-        self.height = self.image.shape[0]"""
     for puntito in puntos:
 
         cX_r_escaled = int(puntito[0] * (puntoLeido[2].shape[1] / puntito[2]  ) ) ###DUDA ENTRE 0 o 1 en el shape Preguntar guille
@@ -61,12 +58,9 @@ while True:
         rect=get_frontal_face(rects)
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
-        #start_time_ns = time.process_time_ns()
-        #eye_detector.get_eyes_position(image=image,shape=shape)
+
         cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l=eye_detector.get_eyes_position(image=image,shape=shape)
-        #end_time_ns = time.process_time_ns()
-        #timer_ns = end_time_ns - start_time_ns
-        #print(timer_ns)
+      
         puntosAct = [cX_r,cY_r,crop_img_r,cX_l,cY_l,crop_img_l]
         if cX_r is not None and cX_l is not None :
             

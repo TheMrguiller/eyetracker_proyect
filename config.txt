@@ -1,0 +1,9 @@
+cX_r:15,cY_r:6,w_r:33,h_r:18,cX_l:17,cY_l:6,w_l:32,h_l:17
+cX_r:16,cY_r:5,w_r:34,h_r:17,cX_l:16,cY_l:6,w_l:32,h_l:17
+cX_r:12,cY_r:6,w_r:34,h_r:17,cX_l:15,cY_l:7,w_l:33,h_l:18
+cX_r:18,cY_r:6,w_r:35,h_r:16,cX_l:17,cY_l:6,w_l:33,h_l:16
+cX_r:16,cY_r:6,w_r:35,h_r:16,cX_l:16,cY_l:6,w_l:33,h_l:16
+cX_r:13,cY_r:5,w_r:34,h_r:14,cX_l:16,cY_l:6,w_l:33,h_l:15
+cX_r:17,cY_r:5,w_r:35,h_r:14,cX_l:18,cY_l:6,w_l:33,h_l:14
+cX_r:16,cY_r:5,w_r:35,h_r:14,cX_l:15,cY_l:5,w_l:33,h_l:14
+cX_r:15,cY_r:5,w_r:34,h_r:14,cX_l:16,cY_l:6,w_l:34,h_l:15

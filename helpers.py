@@ -3,14 +3,14 @@ import cv2
 import numpy as np
 from numpy.linalg import norm
 
-def compararPuntos(puntos, puntoLeido):
+def compararPuntos(puntos_calibracion, puntoLeido):
 
     i = 0
     distanciaMinima = 1000
     cuadranteElegido = 0
 
-    for puntito in puntos:
-        distancia = calcular_distancia(puntito,puntoLeido=puntoLeido,seccion=i)  
+    for punto in puntos_calibracion:
+        distancia = calcular_distancia(punto,puntoLeido=puntoLeido,seccion=i)  
         if distancia < distanciaMinima:
             distanciaMinima = distancia
             cuadranteElegido = i
@@ -59,11 +59,8 @@ def readTxt():
             lineaUnica = []
             line = line.strip()
             splited = line.split(",")
-            #print(splited)
             for tupla in splited:
-                #print(tupla)
                 tupla = tupla.split(":")
-                #print(tupla[1])  ##todos los valores de una linea
                 lineaUnica.append(int(tupla[1]))
             lineasPunto.append(lineaUnica)
         f.close()
@@ -94,7 +91,6 @@ def brightness(image,gamma=0.4):
 
 class eyeDetector:
 
-   
     def __init__(self):
         self.right = [36, 37, 38, 39, 40, 41] # keypoint indices for left eye
         self.left = [42, 43, 44, 45, 46, 47] # keypoint indices for right eye
@@ -138,16 +134,12 @@ class eyeDetector:
 
     #Funcion que devuelve la posicion del ojo dado una mascara, version mejorada.
     def get_positon_v2(self,eye_mask):
-        dilated_mask = cv2.dilate(eye_mask, self.kernel, 1)
-        
+        dilated_mask = cv2.dilate(eye_mask, self.kernel, 1)  
         contours, hier = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_NONE) #Rectangulo exterior con aproximacion simple
-        max_c=contours[0]
-        
+        max_c=contours[0] 
         x,y,w,h = cv2.boundingRect(max_c)
-        
         crop_img = self.image[y:y+h, x:x+w]
-        
         brightness_value=self.brightness_calculator(crop_img)
         if brightness_value < 25:
             crop_img=self.change_brightness_v2(crop_img,0.4)    
@@ -237,7 +229,7 @@ class SegmentPinter:
         self.numberCuadrants = numberCuadrants
         self.N = np.sqrt(self.numberCuadrants)
         self.image=image
-        self.width = self.image.shape[1]  ##solo cogemos el height y la width
+        self.width = self.image.shape[1]  
         self.height = self.image.shape[0]
         self.heightInterval = self.height//self.N
         self.withInterval = self.width//self.N
@@ -246,11 +238,8 @@ class SegmentPinter:
     def refresh_list(self):
         self.listaCuadrants.clear()
         for i in range(int(self.N)):
-            #iwi = i*self.withInterval
-            #ihe = i*self.heightInterval
             for j in range(int(self.N)):
                 punto1 = (int((self.withInterval*j)), int((self.heightInterval*i)))
-                #punto2 = (int((withInterval*(j+1)) + iwi), int((heightInterval*(i+1)) + ihe))
                 punto2 = (int(punto1[0] + self.withInterval), int(punto1[1] + self.heightInterval))
                 listaPuntos = []
                 listaPuntos.append(punto1)
@@ -260,14 +249,13 @@ class SegmentPinter:
     def paint_cuadrants(self):
         image= self.image.copy()
         for i in range(int(self.N) - 1):
-            i += 1 ##Ya corregire esto luego es para ir haciendo pruebas (y, x)
+            i += 1 
             image = cv2.line(image, (0, int(self.heightInterval * i)), (self.width, int(self.heightInterval * i)), (0,0,0), 5)
             image = cv2.line(image, (int(self.withInterval * i), 0 ), (int(self.withInterval*i), self.height), (0,0,0), 5)
         return image
     #Pintamos el objtivo
     def paint_objective(self,image,objetiveCuadrant):
         image=self.tranparetColor(self.listaCuadrants[objetiveCuadrant][0],self.listaCuadrants[objetiveCuadrant][1],image)
-        #image = cv2.line(image, self.listaCuadrants[objetiveCuadrant][0], self.listaCuadrants[objetiveCuadrant][1], (0,0,0), 5)
         return image
     def tranparetColor(self,x_point,x1_point,image):
         mask = np.zeros(image.shape[:2], dtype="uint8")
