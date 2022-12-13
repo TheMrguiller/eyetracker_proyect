@@ -9,6 +9,8 @@ pip install imutils
 pip install PyQt5
 sudo apt-get install qttools5-dev-tools
 pip install screeninfo
+pip install numpy
+pip install opencv-python
 ```
 ## Puesta en marcha
 Para poder utilizar la aplicacion bastaria realizar la siguiente llamada.
@@ -19,6 +21,19 @@ Dentro de esta aplicacion se observaran tres opciones: calibrar,jugar y salir.
 * Calibrar: Es la funcionalidad en la que se calibra el ojo. En esta calibracion se obtienen los 9 puntos de referencia. Estos puntos de referencia se utilizan para calcular la posicion del ojo.
 * Jugar: Es la funcionalidad principal. En esta se dibuja donde esta mirando el usuario.
 * Salir: Se cierra la aplicacion.
+### Pantalla inicial
+En la siguiente imagen se observa la pantalla principal de la aplicacion.
+![Screenshot](mainUI.png)
+### Calibración
+En la calibracion se ira obteniendo los diferentes puntos de referencia. A continuacion se observan ciertos ejemplos.
+![Screenshot](calibrar1.png)
+![Screenshot](calibrar2.png)
+![Screenshot](calibrar3.png)
+### Jugar
+En la siguiente imagen se observa la pantalla de juego.
+![Screenshot](jugar.png)
+### Video de ejemplo
+
 ## Informacion general
 Este proyecto esta formado principalment por 4 elementos:
 * aplicacionUi.py: Se trata de la aplicacion desarrollada, en esta se observa tres elementos: jugar, calibrar y salir
