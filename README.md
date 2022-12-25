@@ -1,5 +1,5 @@
 # eyetracker_proyect
-En este proyecto se ha creado un sistema capaz de identificar dónde está mirando el usuario y pintarlo en pantalla. Para realizar este proyecto, se han utilizado herramientas puramente de visión, exceptuando aquellas que detectan la cara y la sección del ojo.
+En este proyecto se ha creado un sistema capaz de identificar dónde está mirando el usuario y mostrarlo por pantalla. Para realizar este proyecto, se han utilizado herramientas puramente de visión, exceptuando aquellas que detectan la cara y la sección del ojo.
 ## Dependencias
 Para poder poner en marcha el proyecto es necesario descargarse estas librerías.
 ```
@@ -42,8 +42,6 @@ En la siguiente imagen se observa la pantalla de juego.
 ![jugar](https://user-images.githubusercontent.com/33113630/207388658-8e9c3cc8-459a-466d-9fcd-0d3ce71740e9.png)
 ### Video de uso
 https://user-images.githubusercontent.com/33113630/207388685-9d775482-7cd1-4c2b-b491-7bd6f366037d.mp4
-## Video ejemplo practico
-
 ## Problemas observados
 En este proyecto se ha intentado dar solución a un problema mayor, la detección del iris sin usar tecnologías como cámaras con infrarrojo o machine learning. Durante el proceso de desarrollo se han encontrado grandes problemas a los que dar solución, siendo los siguientes:
 * Iluminación: Al tratar la imagen mediante filtros, la iluminación afecta a la detección del iris. Para poder dar solución a este problema se ha detectado la iluminación y dependiendo de la calidad de la imagen se ha realizado un proceso u otro.
